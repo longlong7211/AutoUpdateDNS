@@ -1,0 +1,11 @@
+# Node.js specific
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment files
+.env
+
+# OS specific
+.DS_Store
+Thumbs.db
