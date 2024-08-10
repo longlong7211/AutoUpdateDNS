@@ -123,9 +123,7 @@ async function login() {
   }
 }
 
-async function handleUpdateDNSRecord() {
-  const Cookie = await login();
-  const newIP = await getCurrentIP(Cookie);
+async function getInfoAndUpdate(newIP) {
   const zoneId = await getZones();
   const dnsRecords = await getDNSRecords(zoneId);
   if (dnsRecords.ip !== newIP) {
@@ -135,5 +133,24 @@ async function handleUpdateDNSRecord() {
   }
 }
 
+let lastIPAddress = '';
+let lastCookie = '';
+async function handleUpdateDNSRecord() {
+  let Cookie = '';
+  let newIP = await getCurrentIP(lastCookie);
+  if (newIP) {
+    // check local ipaddress
+    if (newIP != lastIPAddress) {
+      getInfoAndUpdate(newIP);
+    }
+  } else {
+    Cookie = await login();
+    lastCookie = Cookie;
+    newIP = await getCurrentIP(Cookie);
+    getInfoAndUpdate(newIP);
+  }
+  lastIPAddress = newIP;
+}
+
 handleUpdateDNSRecord();
-setInterval(handleUpdateDNSRecord, 1000 * 60 * 60 * 24);
+setInterval(handleUpdateDNSRecord, 1000 * 10);
